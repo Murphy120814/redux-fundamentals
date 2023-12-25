@@ -7,14 +7,14 @@ const restockCake = "cake_restock";
 function orderACake() {
   return {
     type: orderCake,
-    quantity: 1,
+    payload: 1, //? if you want to send any additional information other than type in redux then you have to use payload
   };
 }
 
 function restockingCake() {
   return {
     type: restockCake,
-    quantity: 1,
+    payload: 1,
   };
 }
 //? after that we will gonna create initialState initial state is an object which contains the object where state of the whole application is been saved
@@ -29,12 +29,12 @@ const reducer = (previousState = initialState, action) => {
     case "cake_order":
       return {
         ...previousState,
-        numberOfCakes: previousState.numberOfCakes - 1,
+        numberOfCakes: previousState.numberOfCakes - action.payload,
       };
     case "cake_restock":
       return {
         ...previousState,
-        numberOfCakes: previousState.numberOfCakes + 1,
+        numberOfCakes: previousState.numberOfCakes + action.payload,
       };
     default:
       return previousState;
@@ -57,7 +57,6 @@ store.dispatch(orderACake());
 store.dispatch(orderACake());
 store.dispatch(orderACake());
 
-store.dispatch(restockingCake());
 store.dispatch(restockingCake());
 store.dispatch(restockingCake());
 store.dispatch(restockingCake());
