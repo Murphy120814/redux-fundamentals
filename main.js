@@ -1,10 +1,10 @@
-import { legacy_createStore } from "redux";
+import { legacy_createStore, bindActionCreators } from "redux";
 
 //? creating an action variable
 const orderCake = "cake_order"; // The action name is stored in the string format
 const restockCake = "cake_restock";
 //? creation of action creator where action creator is a function which returns the action object containing the mandatory property named as type and other properties
-function orderACake() {
+function orderingACake() {
   return {
     type: orderCake,
     payload: 1, //? if you want to send any additional information other than type in redux then you have to use payload
@@ -51,16 +51,15 @@ const unsubscribe = store.subscribe(() =>
   console.log("Updated value", store.getState())
 );
 
-store.dispatch(orderACake());
-store.dispatch(orderACake());
-store.dispatch(orderACake());
-store.dispatch(orderACake());
-store.dispatch(orderACake());
+const actions = bindActionCreators(
+  { orderingACake, restockingCake },
+  store.dispatch
+);
 
-store.dispatch(restockingCake());
-store.dispatch(restockingCake());
-store.dispatch(restockingCake());
-store.dispatch(restockingCake());
-store.dispatch(restockingCake());
-store.dispatch(restockingCake());
+actions.orderingACake();
+actions.restockingCake();
+actions.restockingCake();
+actions.restockingCake();
+actions.orderingACake();
+
 unsubscribe();
