@@ -1,65 +1,43 @@
-import { legacy_createStore, bindActionCreators } from "redux";
-
-//? creating an action variable
-const orderCake = "cake_order"; // The action name is stored in the string format
-const restockCake = "cake_restock";
-//? creation of action creator where action creator is a function which returns the action object containing the mandatory property named as type and other properties
-function orderingACake() {
-  return {
-    type: orderCake,
-    payload: 1, //? if you want to send any additional information other than type in redux then you have to use payload
-  };
-}
-
-function restockingCake() {
-  return {
-    type: restockCake,
-    payload: 1,
-  };
-}
-//? after that we will gonna create initialState initial state is an object which contains the object where state of the whole application is been saved
+import { ORDER_CAKE, RESTOCK_CAKE } from "./constants";
+import { cakeHasRestocked, cakeOrdered } from "./constants";
+import { legacy_createStore } from "redux";
 
 const initialState = {
-  numberOfCakes: 10,
+  numberOfCake: 10,
 };
 
-//? reducer is an pure function which has two input arguments previous state and action and returns new state
-const reducer = (previousState = initialState, action) => {
+//? creating reducer aliasing to shopkeeper who will connect our actions to the store
+
+const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case "cake_order":
+    case ORDER_CAKE:
       return {
-        ...previousState,
-        numberOfCakes: previousState.numberOfCakes - action.payload,
+        ...state,
+        numberOfCake: state.numberOfCake - action.payload,
       };
-    case "cake_restock":
+    case RESTOCK_CAKE:
       return {
-        ...previousState,
-        numberOfCakes: previousState.numberOfCakes + action.payload,
+        ...state,
+        numberOfCake: state.numberOfCake + action.payload,
       };
     default:
-      return previousState;
+      return state;
   }
 };
 
-//?creating store where store would be an returned value of redux.createStore which will take reducer as an input
+//?Now after creating the reducer you have to create the store that store can be created using legacyCreateStore
+
 const store = legacy_createStore(reducer);
 
-console.log("initial store value", store.getState());
-//? I will subscribe to store with subscribe method
+console.log("Initial State", store.getState());
+//? store is an object which gives us 4 methods dispatch , getState, subscribe, replaceReducer
 
 const unsubscribe = store.subscribe(() =>
-  console.log("Updated value", store.getState())
+  console.log("Updated State", store.getState())
 );
+//?the subscribe method will run every time when there is change in the state of the application
+store.dispatch(cakeOrdered());
+store.dispatch(cakeOrdered());
+store.dispatch(cakeOrdered());
 
-const actions = bindActionCreators(
-  { orderingACake, restockingCake },
-  store.dispatch
-);
-
-actions.orderingACake();
-actions.restockingCake();
-actions.restockingCake();
-actions.restockingCake();
-actions.orderingACake();
-
-unsubscribe();
+store.dispatch(cakeHasRestocked(10));
