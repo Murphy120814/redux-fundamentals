@@ -1,14 +1,27 @@
-import { ORDER_CAKE, RESTOCK_CAKE } from "./constants";
-import { cakeHasRestocked, cakeOrdered } from "./constants";
-import { bindActionCreators, legacy_createStore } from "redux";
+import {
+  ORDER_CAKE,
+  RESTOCK_CAKE,
+  ORDER_ICE_CREAM,
+  RESTOCK_ICE_CREAM,
+} from "./constants";
+import {
+  cakeHasRestocked,
+  cakeOrdered,
+  iceCreamHasRestocked,
+  iceCreamOrdered,
+} from "./constants";
+import { bindActionCreators, legacy_createStore, combineReducers } from "redux";
 
-const initialState = {
+const initialCakeState = {
   numberOfCake: 10,
 };
 
+const initialIceCreamState = {
+  numberOfIceCream: 10,
+};
 //? creating reducer aliasing to shopkeeper who will connect our actions to the store
 
-const reducer = (state = initialState, action) => {
+const cakeReducer = (state = initialCakeState, action) => {
   switch (action.type) {
     case ORDER_CAKE:
       return {
@@ -25,9 +38,31 @@ const reducer = (state = initialState, action) => {
   }
 };
 
+//? creating reducer for IceCream
+const iceCreamReducer = (state = initialIceCreamState, action) => {
+  switch (action.type) {
+    case ORDER_ICE_CREAM:
+      return {
+        ...state,
+        numberOfIceCream: state.numberOfIceCream - action.payload,
+      };
+    case RESTOCK_ICE_CREAM:
+      return {
+        ...state,
+        numberOfIceCream: state.numberOfIceCream + action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+const combinedReducer = combineReducers({
+  cake: cakeReducer,
+  iceCream: iceCreamReducer,
+});
 //?Now after creating the reducer you have to create the store that store can be created using legacyCreateStore
 
-const store = legacy_createStore(reducer);
+const store = legacy_createStore(combinedReducer);
 
 console.log("Initial State", store.getState());
 //? store is an object which gives us 4 methods dispatch , getState, subscribe, replaceReducer
@@ -40,13 +75,14 @@ const unsubscribe = store.subscribe(() =>
 //! store.dispatch(actionName(payload))
 
 const actions = bindActionCreators(
-  { cakeOrdered, cakeHasRestocked },
+  { cakeOrdered, cakeHasRestocked, iceCreamHasRestocked, iceCreamOrdered },
   store.dispatch
 );
 
 console.log(actions);
 
 actions.cakeOrdered(1);
+actions.iceCreamHasRestocked(10);
 actions.cakeHasRestocked(10);
 
-unsubscribe(); //?unsubscribe is use to cancel the subscription from the store this unsubscribe function has been returned by the subscribe function  
+unsubscribe(); //?unsubscribe is use to cancel the subscription from the store this unsubscribe function has been returned by the subscribe function
