@@ -1,6 +1,6 @@
 import { ORDER_CAKE, RESTOCK_CAKE } from "./constants";
 import { cakeHasRestocked, cakeOrdered } from "./constants";
-import { legacy_createStore } from "redux";
+import { bindActionCreators, legacy_createStore } from "redux";
 
 const initialState = {
   numberOfCake: 10,
@@ -35,9 +35,18 @@ console.log("Initial State", store.getState());
 const unsubscribe = store.subscribe(() =>
   console.log("Updated State", store.getState())
 );
-//?the subscribe method will run every time when there is change in the state of the application
-store.dispatch(cakeOrdered());
-store.dispatch(cakeOrdered());
-store.dispatch(cakeOrdered());
 
-store.dispatch(cakeHasRestocked(10));
+//? Now going to use bindActionCreator to bind the actions to dispatch function this bindAction creator will return an object which includes the functions identified as the property name of that object and you can directly call those properties without writing
+//! store.dispatch(actionName(payload))
+
+const actions = bindActionCreators(
+  { cakeOrdered, cakeHasRestocked },
+  store.dispatch
+);
+
+console.log(actions);
+
+actions.cakeOrdered(1);
+actions.cakeHasRestocked(10);
+
+unsubscribe(); //?unsubscribe is use to cancel the subscription from the store this unsubscribe function has been returned by the subscribe function  
